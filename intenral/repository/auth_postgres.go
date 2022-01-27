@@ -22,6 +22,14 @@ func (r *AuthPostgres) CreateUser(user domain.User) (int, error) {
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}
-	
+
 	return id, nil
+}
+
+func (r *AuthPostgres) GetUser(username, password string) (domain.User, error) {
+	var user domain.User
+	query := fmt.Sprintf("select id from %s where username=$1 and password_hash=$2", usersTable)
+	err := r.db.Get(&user, query, username, password)
+
+	return user, err
 }
