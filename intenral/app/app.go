@@ -13,6 +13,7 @@ import (
 )
 
 func Run() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
 	if err := initConfig(); err != nil {
 		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
@@ -33,8 +34,8 @@ func Run() {
 		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
-	repos := repository.NewRepository(db)
-	services := service.NewService(repos)
+	repo := repository.NewRepository(db)
+	services := service.NewService(repo)
 	handlers := handler.NewHandler(services)
 
 	srv := new(server.Server)
@@ -46,5 +47,6 @@ func Run() {
 func initConfig() error {
 	viper.AddConfigPath("configs")
 	viper.SetConfigName("main")
+
 	return viper.ReadInConfig()
 }
