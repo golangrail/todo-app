@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/joho/godotenv"
+	// Postgres driver
 	_ "github.com/lib/pq"
 	handler "github.com/lov3allmy/todo-app/intenral/delivery/http"
 	"github.com/lov3allmy/todo-app/intenral/repository"

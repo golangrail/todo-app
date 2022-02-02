@@ -36,3 +36,21 @@ func (r *TodoListPostgres) Create(userID int, list domain.TodoList) (int, error)
 
 	return id, tx.Commit()
 }
+
+func (r *TodoListPostgres) ReadAll(userID int) ([]domain.TodoList, error) {
+	var lists []domain.TodoList
+	query := fmt.Sprintf("select tl.id, tl.title, tl.description from %s tl inner join %s ul on tl.id = ul.list_id where ul.user_id = $1", todoListsTable, usersListsTable)
+
+	err := r.db.Select(&lists, query, userID)
+
+	return lists, err
+}
+
+func (r *TodoListPostgres) ReadByID(userID, listID int) (domain.TodoList, error) {
+	var list domain.TodoList
+	query := fmt.Sprintf("select tl.id, tl.title, tl.description from %s tl inner join %s ul on tl.id = ul.list_id where ul.user_id = $1 and ul.list_id = $2", todoListsTable, usersListsTable)
+
+	err := r.db.Get(&list, query, userID, listID)
+
+	return list, err
+}

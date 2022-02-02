@@ -16,3 +16,11 @@ func NewTodoListService(repo repository.TodoList) *TodoListService {
 func (s *TodoListService) Create(userID int, list domain.TodoList) (int, error) {
 	return s.repo.Create(userID, list)
 }
+
+func (s *TodoListService) ReadAll(userID int) ([]domain.TodoList, error) {
+	return s.repo.ReadAll(userID)
+}
+
+func (s *TodoListService) ReadByID(userID, listID int) (domain.TodoList, error) {
+	return s.repo.ReadByID(userID, listID)
+}
