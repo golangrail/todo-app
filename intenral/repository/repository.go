@@ -5,6 +5,11 @@ import (
 	"github.com/lov3allmy/todo-app/intenral/domain"
 )
 
+type UpdateListInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+}
+
 type Authorization interface {
 	CreateUser(user domain.User) (int, error)
 	GetUser(username, password string) (domain.User, error)
@@ -14,6 +19,8 @@ type TodoList interface {
 	Create(userID int, list domain.TodoList) (int, error)
 	ReadAll(userID int) ([]domain.TodoList, error)
 	ReadByID(userID, listID int) (domain.TodoList, error)
+	Update(usedID, listID int, input UpdateListInput) error
+	Delete(userID, listID int) error
 }
 
 type TodoItem interface {

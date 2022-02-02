@@ -24,3 +24,19 @@ func (s *TodoListService) ReadAll(userID int) ([]domain.TodoList, error) {
 func (s *TodoListService) ReadByID(userID, listID int) (domain.TodoList, error) {
 	return s.repo.ReadByID(userID, listID)
 }
+
+func (s *TodoListService) Update(usedID, listID int, input UpdateListInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+	updateInput := repository.UpdateListInput{
+		Title:       input.Title,
+		Description: input.Description,
+	}
+
+	return s.repo.Update(usedID, listID, updateInput)
+}
+
+func (s *TodoListService) Delete(userID, listID int) error {
+	return s.repo.Delete(userID, listID)
+}
