@@ -1,0 +1,13 @@
+output:
+  path-prefix: ""
+  sort-results: true
+  format: tab
+  print-issued-lines: false
+  print-linter-name: true
+  uniq-by-line: false
+
+linters:
+  disable-all: true
+  enable:
+    - golint
+  fast: true
