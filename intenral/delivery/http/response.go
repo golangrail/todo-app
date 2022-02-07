@@ -14,6 +14,10 @@ type getAllListsResponse struct {
 	Data []domain.TodoList `json:"data"`
 }
 
+type getAllItemsResponse struct {
+	Data []domain.TodoItem `json:"data"`
+}
+
 type statusResponse struct {
 	Status string `json:"status"`
 }

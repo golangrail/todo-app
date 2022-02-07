@@ -20,12 +20,12 @@ func (h *Handler) createList(ctx *gin.Context) {
 		return
 	}
 
-	id, err := h.services.TodoList.Create(userID, input)
+	listID, err := h.services.TodoList.Create(userID, input)
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	ctx.JSON(http.StatusOK, map[string]interface{}{"id": id})
+	ctx.JSON(http.StatusOK, map[string]interface{}{"list_id": listID})
 }
 
 func (h *Handler) readAllLists(ctx *gin.Context) {
@@ -49,13 +49,13 @@ func (h *Handler) readListByID(ctx *gin.Context) {
 		return
 	}
 
-	id, err := strconv.Atoi(ctx.Param("list_id"))
+	listID, err := strconv.Atoi(ctx.Param("list_id"))
 	if err != nil {
-		newErrorResponse(ctx, http.StatusBadRequest, "invalid id param")
+		newErrorResponse(ctx, http.StatusBadRequest, "invalid list_id param")
 		return
 	}
 
-	list, err := h.services.TodoList.ReadByID(userID, id)
+	list, err := h.services.TodoList.ReadByID(userID, listID)
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
@@ -70,9 +70,9 @@ func (h *Handler) updateList(ctx *gin.Context) {
 		return
 	}
 
-	id, err := strconv.Atoi(ctx.Param("list_id"))
+	listID, err := strconv.Atoi(ctx.Param("list_id"))
 	if err != nil {
-		newErrorResponse(ctx, http.StatusBadRequest, "invalid id param")
+		newErrorResponse(ctx, http.StatusBadRequest, "invalid list_id param")
 		return
 	}
 
@@ -82,7 +82,7 @@ func (h *Handler) updateList(ctx *gin.Context) {
 		return
 	}
 
-	if err := h.services.TodoList.Update(userID, id, input); err != nil {
+	if err := h.services.TodoList.Update(userID, listID, input); err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -96,13 +96,13 @@ func (h *Handler) deleteList(ctx *gin.Context) {
 		return
 	}
 
-	id, err := strconv.Atoi(ctx.Param("list_id"))
+	listID, err := strconv.Atoi(ctx.Param("list_id"))
 	if err != nil {
-		newErrorResponse(ctx, http.StatusBadRequest, "invalid id param")
+		newErrorResponse(ctx, http.StatusBadRequest, "invalid list_id param")
 		return
 	}
 
-	if err := h.services.TodoList.Delete(userID, id); err != nil {
+	if err := h.services.TodoList.Delete(userID, listID); err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}

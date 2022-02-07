@@ -22,30 +22,42 @@ func (r *TodoListPostgres) Create(userID int, list domain.TodoList) (int, error)
 		return 0, err
 	}
 
-	var id int
+	var listID int
 	createListQuery := fmt.Sprintf("insert into %s (title, description) values ($1, $2) returning id", todoListsTable)
 	row := tx.QueryRow(createListQuery, list.Title, list.Description)
-	if err := row.Scan(&id); err != nil {
-		tx.Rollback()
+	if err := row.Scan(&listID); err != nil {
+		err := tx.Rollback()
+		if err != nil {
+			return 0, err
+		}
 		return 0, err
 	}
 
 	createUsersListQuery := fmt.Sprintf("insert into %s (user_id, list_id) values ($1, $2)", usersListsTable)
-	if _, err := tx.Exec(createUsersListQuery, userID, id); err != nil {
-		tx.Rollback()
+	if _, err := tx.Exec(createUsersListQuery, userID, listID); err != nil {
+		err := tx.Rollback()
+		if err != nil {
+			return 0, err
+		}
 		return 0, err
 	}
 
-	return id, tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return listID, nil
 }
 
 func (r *TodoListPostgres) ReadAll(userID int) ([]domain.TodoList, error) {
 	var lists []domain.TodoList
 	query := fmt.Sprintf("select tl.id, tl.title, tl.description from %s tl inner join %s ul on tl.id = ul.list_id where ul.user_id = $1", todoListsTable, usersListsTable)
 
-	err := r.db.Select(&lists, query, userID)
+	if err := r.db.Select(&lists, query, userID); err != nil {
+		return nil, err
+	}
 
-	return lists, err
+	return lists, nil
 }
 
 func (r *TodoListPostgres) ReadByID(userID, listID int) (domain.TodoList, error) {
@@ -57,20 +69,20 @@ func (r *TodoListPostgres) ReadByID(userID, listID int) (domain.TodoList, error)
 	return list, err
 }
 
-func (r *TodoListPostgres) Update(usedID, listID int, input UpdateListInput) error {
+func (r *TodoListPostgres) Update(usedID, listID int, listInput UpdateListInput) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argID := 1
 
-	if input.Title != nil {
+	if listInput.Title != nil {
 		setValues = append(setValues, fmt.Sprintf("title = $%d", argID))
-		args = append(args, *input.Title)
+		args = append(args, *listInput.Title)
 		argID++
 	}
 
-	if input.Description != nil {
+	if listInput.Description != nil {
 		setValues = append(setValues, fmt.Sprintf("description = $%d", argID))
-		args = append(args, *input.Description)
+		args = append(args, *listInput.Description)
 		argID++
 	}
 
